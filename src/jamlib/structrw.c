@@ -29,30 +29,22 @@
 
 uint16_t jamgetuword(char *buf,uint32_t offset)
 {
-   return (uint16_t) buf[offset]+
-                   buf[offset+1]*256;
+   return *(uint16_t *)(buf + offset);
 }
 
 void jamputuword(char *buf,uint32_t offset,uint16_t num)
 {
-   buf[offset]=num%256;
-   buf[offset+1]=num/256;
+	memcpy (buf + offset, &num, 2);
 }
 
 void jamputuint32_t(char *buf,uint32_t offset,uint32_t num)
 {
-   buf[offset]=num%256;
-   buf[offset+1]=(num / 256) % 256;
-   buf[offset+2]=(num / 256 / 256) % 256;
-   buf[offset+3]=(num / 256 / 256 / 256) % 256;
+   memcpy (buf + offset, &num, 4);
 }
 
 uint32_t jamgetuint32_t(char *buf,uint32_t offset)
 {
-   return (uint32_t) buf[offset]+
-                  buf[offset+1]*256+
-                  buf[offset+2]*256*256+
-                  buf[offset+3]*256*256*256;
+   return *(uint32_t *)(buf + offset);
 }
 
 int freadjambaseheader(FILE *fp,s_JamBaseHeader *s_JamBaseHeader)
