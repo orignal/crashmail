@@ -181,11 +181,12 @@ bool IsArc(char *file)
    int c;
    char ext[4];
 
+
    if(strlen(file)!=12) return(FALSE);
    if(file[8]!='.')     return(FALSE);
 
    for(c=0;c<8;c++)
-      if((file[c]<'0' || file[c]>'9') && ((tolower(file[c]) < 'a') || (tolower(file[c]) > 'f'))) return(FALSE);
+      if((file[c]<'0' || file[c]>'9') && ((tolower(file[c]) < 'a') || (tolower(file[c]) > 'z'))) return(FALSE);
 
    strncpy(ext,&file[9],2);
    ext[2]=0;
