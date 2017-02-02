@@ -270,7 +270,7 @@ void striplead(char *str)
 	while(str[c]==' ')
 		c++;
 
-	strcpy(str,&str[c]);
+	memmove(str, str + c, strlen (str + c) + 1);
 }
 
 void stripleadtrail(char *str)

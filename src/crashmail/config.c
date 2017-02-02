@@ -594,19 +594,19 @@ bool ReadConfig(char *filename,struct Config *cfg,short *seconderr,uint32_t *cfg
             if(buf2[0]=='!')
             {
                flags=TOSSNODE_READONLY;
-               strcpy(buf2,&buf2[1]);
+               memmove(buf2, buf2 + 1, strlen (buf2));
             }
 
             if(buf2[0]=='@')
             {
                flags=TOSSNODE_WRITEONLY;
-               strcpy(buf2,&buf2[1]);
+               memmove(buf2, buf2 + 1, strlen (buf2));
             }
 
             if(buf2[0]=='%')
             {
                flags=TOSSNODE_FEED;
-               strcpy(buf2,&buf2[1]);
+               memmove(buf2, buf2 + 1, strlen (buf2));
             }
 
             if(!(Parse4DTemplate(buf2,&tmp4d,&tpl4d)))

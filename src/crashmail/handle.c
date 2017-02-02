@@ -732,8 +732,10 @@ bool HandleEchomail(struct MemMessage *mm)
       toss_import++;
 
       if(config.cfg_Flags & CFG_STRIPRE)
-         strcpy(mm->Subject,StripRe(mm->Subject));
-
+	  {
+		 char * stripped = StripRe(mm->Subject);		
+         memmove (mm->Subject, stripped, strlen (stripped) + 1);
+	  }	
 		/* Remove LOCAL flag if set and set SENT flag */
 
 		mm->Attr |= FLAG_SENT;
@@ -1243,7 +1245,10 @@ bool HandleNetmail(struct MemMessage *mm)
 			return(TRUE);
 
       if(config.cfg_Flags & CFG_STRIPRE)
-         strcpy(mm->Subject,StripRe(mm->Subject));
+	 {	
+		 char * stripped = StripRe(mm->Subject);		
+         memmove (mm->Subject, stripped, strlen (stripped) + 1);
+	 }	
 
       /* Import empty netmail? */
 
@@ -1276,7 +1281,10 @@ bool HandleNetmail(struct MemMessage *mm)
 		      toss_import++;
 
    		   if(config.cfg_Flags & CFG_STRIPRE)
-	      	   strcpy(mm->Subject,StripRe(mm->Subject));
+		  {
+				 char * stripped = StripRe(mm->Subject);		
+         		  memmove (mm->Subject, stripped, strlen (stripped) + 1);
+		  }
 
 				/* Remove LOCAL flag if set and set SENT flag */
 
