@@ -478,7 +478,7 @@ bool ReadPkt(char *pkt,struct osFileEntry *fe,bool bundled,bool (*handlefunc)(st
          mmFree(mm);
          return(FALSE);
       }
-
+	
       msgoffset=osFTell(fh);
 
       if(osRead(fh,PktMsgHeader,SIZE_PKTMSGHEADER) < 2)

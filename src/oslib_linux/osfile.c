@@ -141,3 +141,4 @@ void osSeek(osFile fh,off_t offset,short mode)
 
    fseeko((FILE *)fh,offset,md);
 }
+

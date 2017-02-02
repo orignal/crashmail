@@ -22,11 +22,6 @@ win32 :
 	make -C oslib_win32 
 	make -f Makefile.win32
 
-os2 :
-	make -C cmnllib -f Makefile.os2
-	make -C jamlib -f Makefile.os2
-	make -C oslib_os2 
-	make -f Makefile.os2
 
 cleanlinux : 
 	make -C cmnllib -f Makefile.linux clean
@@ -40,10 +35,5 @@ cleanwin32 :
 	make -C oslib_win32 clean
 	make -f Makefile.win32 clean
 
-cleanos2 : 
-	make -C cmnllib -f Makefile.os2 clean
-	make -C jamlib -f Makefile.os2 clean
-	make -C oslib_os2 clean
-	make -f Makefile.os2 clean
 
 

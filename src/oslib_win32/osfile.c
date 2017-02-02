@@ -384,3 +384,4 @@ ulong osFTell(osFile os)
 
    return(osf->filepos);
 }
+
