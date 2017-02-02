@@ -481,14 +481,20 @@ bool ReadPkt(char *pkt,struct osFileEntry *fe,bool bundled,bool (*handlefunc)(st
 	
       msgoffset=osFTell(fh);
 
-      if(osRead(fh,PktMsgHeader,SIZE_PKTMSGHEADER) < 2)
+      if(osRead(fh,PktMsgHeader,SIZE_PKTMSGHEADER) < 2) 
       {
-         LogWrite(1,TOSSINGERR,"Packet header too short for msg #%u (offset %d)",msgnum+1,msgoffset);
-         osClose(fh);
-         mmFree(mm);
-         sprintf(buf,"Packet header too short for msg #%u (offset %d)",msgnum+1,msgoffset);
-         BadFile(pkt,buf);
-         return(TRUE);
+		 if (PktMsgHeader[0])
+		 {
+		     LogWrite(1,TOSSINGERR,"Packet header too short for msg #%u (offset %d)",msgnum+1,msgoffset);
+		     osClose(fh);
+		     mmFree(mm);
+		     sprintf(buf,"Packet header too short for msg #%u (offset %d)",msgnum+1,msgoffset);
+		     BadFile(pkt,buf);
+		     return(TRUE);
+		}
+		else
+			// some tossers might produce one zero instead two
+			memset (PktMsgHeader, 0, SIZE_PKTMSGHEADER);
       }
    }
 
