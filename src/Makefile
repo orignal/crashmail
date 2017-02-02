@@ -22,6 +22,12 @@ win32 :
 	make -C oslib_win32 
 	make -f Makefile.win32
 
+osx :
+	mkdir -p obj
+	make -C cmnllib -f Makefile.osx
+	make -C jamlib -f Makefile.osx
+	make -C oslib_linux 
+	make -f Makefile.osx
 
 cleanlinux : 
 	make -C cmnllib -f Makefile.linux clean
@@ -35,5 +41,9 @@ cleanwin32 :
 	make -C oslib_win32 clean
 	make -f Makefile.win32 clean
 
-
+cleanosx : 
+	make -C cmnllib -f Makefile.osx clean
+	make -C jamlib -f Makefile.osx clean
+	make -C oslib_linux clean
+	make -f Makefile.osx clean
 
