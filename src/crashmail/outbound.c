@@ -62,59 +62,19 @@ void MakeBaseName(struct Node4D *n4d,char *basename)
    else if(tmproute->Aka->Domain[0]==0 || firstaka->Domain[0]==0 || stricmp(tmproute->Aka->Domain,firstaka->Domain)==0)
       samedomain=TRUE;
 
-   if(samedomain)
+   strcpy(basename,config.cfg_Outbound);
+   if(basename[0])
    {
-      /* Main domain */
-
-      strcpy(basename,config.cfg_Outbound);
-
-      if(basename[0])
-      {
-         if(strchr(ospathchars,basename[strlen(basename)-1]))
-            basename[strlen(basename)-1]=0; /* Strip / */
-      }
-
-      if(n4d->Zone != firstaka->Node.Zone)
-      {
-         /* Not in main zone */
-
-         num=n4d->Zone;
-
-			if(!(config.cfg_Flags & CFG_NOMAXOUTBOUNDZONE))
-			{
-         	if(num > 0xfff)
-					num=0xfff;
-			}
-
-         sprintf(buf,".%03x",num);
-         strcat(basename,buf);
-      }
+		if(strchr(ospathchars,basename[strlen(basename)-1]))
+			basename[strlen(basename)-1]=0; /* Strip / */
    }
-   else
+
+   if(!samedomain)
    {
-      /* Other domain */
-
-      strcpy(basename,config.cfg_Outbound);
-
-      if(basename[0])
-      {
-         if(strchr(ospathchars,basename[strlen(basename)-1]))
-            basename[strlen(basename)-1]=0; /* Strip / */
-      }
+      /* Other domain, path + domain */
 
       *GetFilePart(basename)=0; /* Use domain as last component in path */
       strcat(basename,tmproute->Aka->Domain);
-
-      num=n4d->Zone;
-
-		if(!(config.cfg_Flags & CFG_NOMAXOUTBOUNDZONE))
-		{
-         if(num > 0xfff)
-				num=0xfff;
-		}
-
-      sprintf(buf,".%03x",num);
-      strcat(basename,buf);
    }
 
    if(!osExists(basename))
