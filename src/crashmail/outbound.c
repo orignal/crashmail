@@ -542,10 +542,10 @@ bool doAddFlow(char *filename,char *basename,char type,long mode)
    {
       striptrail(buf);
 
-      if(buf[0]=='#') strcpy(buf,&buf[1]);
-      if(buf[0]=='~') strcpy(buf,&buf[1]);
-      if(buf[0]=='^') strcpy(buf,&buf[1]);
-      if(buf[0]=='-') strcpy(buf,&buf[1]);
+      if(buf[0]=='#') memmove(buf, buf + 1, strlen (buf));
+      if(buf[0]=='~') memmove(buf, buf + 1, strlen (buf));
+      if(buf[0]=='^') memmove(buf, buf + 1, strlen (buf));
+      if(buf[0]=='-') memmove(buf, buf + 1, strlen (buf));
 
       if(stricmp(buf,filename)==0)
       {
