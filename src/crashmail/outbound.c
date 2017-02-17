@@ -44,7 +44,7 @@ void MakeBaseName(struct Node4D *n4d,char *basename)
    struct Route *tmproute;
    bool samedomain;
    char *ospathchars;
-   uint32_t num,c;
+   uint32_t c;
    char buf[50];
 
    ospathchars=OS_PATH_CHARS;
@@ -76,6 +76,12 @@ void MakeBaseName(struct Node4D *n4d,char *basename)
       *GetFilePart(basename)=0; /* Use domain as last component in path */
       strcat(basename,tmproute->Aka->Domain);
    }
+   else if(n4d->Zone != firstaka->Node.Zone)
+   {
+		/* same domain, different zones */	
+    	sprintf(buf,".%03x", n4d->Zone);
+		strcat(basename, buf);		
+   }		
 
    if(!osExists(basename))
       osMkDir(basename);
