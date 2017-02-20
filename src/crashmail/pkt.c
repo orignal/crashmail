@@ -305,21 +305,6 @@ bool ReadPkt(char *pkt,struct osFileEntry *fe,bool bundled,bool (*handlefunc)(st
          buf);
    }
 
-   if(tmpcnode)
-   {
-      strncpy(buf,(char *)&PktHeader[PKTHEADER_PASSWORD],8);
-      buf[8]=0;
-
-      if(tmpcnode->PacketPW[0]!=0 && stricmp(buf,tmpcnode->PacketPW)!=0 && !no_security)
-      {
-         LogWrite(1,TOSSINGERR,"Wrong password");
-         osClose(fh);
-         mmFree(mm);
-         BadFile(pkt,"Wrong password");
-         return(TRUE);
-      }
-   }
-
    msgoffset=osFTell(fh);
 
    if(osRead(fh,PktMsgHeader,SIZE_PKTMSGHEADER) < 2)
@@ -414,6 +399,22 @@ bool ReadPkt(char *pkt,struct osFileEntry *fe,bool bundled,bool (*handlefunc)(st
             return(FALSE);
          }
       }
+
+	  /* check password if echo or NONETMAILPASSWORD not set */	
+		if(tmpcnode && (mm->Area[0] || (tmpcnode->Flags & ~NODE_NONETMAILPASSWORD)))
+		{
+		  strncpy(buf,(char *)&PktHeader[PKTHEADER_PASSWORD],8);
+		  buf[8]=0;
+
+		  if(tmpcnode->PacketPW[0]!=0 && stricmp(buf,tmpcnode->PacketPW)!=0 && !no_security)
+		  {
+			 LogWrite(1,TOSSINGERR,"Wrong password");
+			 osClose(fh);
+			 mmFree(mm);
+			 BadFile(pkt,"Wrong password");
+			 return(TRUE);
+		  }
+		}
 
       /* Get rest of text */
 
@@ -564,7 +565,7 @@ struct Pkt *CreatePkt(struct Node4D *dest,struct ConfigNode *node,struct Node4D 
 {
    char buf[100],buf2[100];
    struct Pkt *pkt;
-   uint32_t num,c;
+   uint32_t num;
    time_t t;
    struct tm *tp;
    uint8_t PktHeader[SIZE_PKTHEADER];
@@ -637,10 +638,9 @@ struct Pkt *CreatePkt(struct Node4D *dest,struct ConfigNode *node,struct Node4D 
    PktHeader[PKTHEADER_PRODDATA+2]=0;
    PktHeader[PKTHEADER_PRODDATA+3]=0;
 
-   for(c=0;c<8;c++)
-      PktHeader[PKTHEADER_PASSWORD+c]=0;
+   memset (PktHeader + PKTHEADER_PASSWORD, 0, 8);
 
-   if(node)
+   if(node && (type == PKTS_ECHOMAIL || (node->Flags & ~NODE_NONETMAILPASSWORD)))
       strncpy((char *)&PktHeader[PKTHEADER_PASSWORD],node->PacketPW,8);
 
    pktWrite(pkt,PktHeader,SIZE_PKTHEADER);

@@ -145,6 +145,7 @@ struct BannedNode
 #define NODE_SENDTEXT     256
 #define NODE_PKTFROM	  512
 #define NODE_AFNEEDSPLUS 1024
+#define NODE_NONETMAILPASSWORD 2048
 struct RemoteAFCommand
 {
    struct RemoteAFCommand *Next;

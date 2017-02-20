@@ -496,6 +496,10 @@ DOMAIN "FidoNet"
 ; 
 ;  Send echomail to this node with priority Hold.
 ;
+; NONETMAILPASSWORD
+;
+; Netmail packets without password if PACKNETMAIL is not set
+;  
 
 NODE 2:200/100.0 "ZIP" "" PACKNETMAIL AUTOADD
 DEFAULTGROUP A

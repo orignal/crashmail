@@ -280,6 +280,9 @@ bool ReadConfig(char *filename,struct Config *cfg,short *seconderr,uint32_t *cfg
             else if(stricmp(buf2,"AUTOADD")==0)
                LastCNode->Flags|=NODE_AUTOADD;
 
+			else if (stricmp(buf2,"NONETMAILPASSWORD")==0)
+			   LastCNode->Flags |= NODE_NONETMAILPASSWORD;	
+
             else if(stricmp(buf2,"CRASH")==0)
                LastCNode->EchomailPri=PKTS_CRASH;
 
