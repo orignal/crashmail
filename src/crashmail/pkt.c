@@ -401,7 +401,7 @@ bool ReadPkt(char *pkt,struct osFileEntry *fe,bool bundled,bool (*handlefunc)(st
       }
 
 	  /* check password if echo or NONETMAILPASSWORD not set */	
-		if(tmpcnode && (mm->Area[0] || (tmpcnode->Flags & ~NODE_NONETMAILPASSWORD)))
+		if(tmpcnode && (mm->Area[0] || !(tmpcnode->Flags & NODE_NONETMAILPASSWORD)))
 		{
 		  strncpy(buf,(char *)&PktHeader[PKTHEADER_PASSWORD],8);
 		  buf[8]=0;
@@ -640,7 +640,7 @@ struct Pkt *CreatePkt(struct Node4D *dest,struct ConfigNode *node,struct Node4D 
 
    memset (PktHeader + PKTHEADER_PASSWORD, 0, 8);
 
-   if(node && (type == PKTS_ECHOMAIL || (node->Flags & ~NODE_NONETMAILPASSWORD)))
+   if(node && (type == PKTS_ECHOMAIL || !(node->Flags & NODE_NONETMAILPASSWORD)))
       strncpy((char *)&PktHeader[PKTHEADER_PASSWORD],node->PacketPW,8);
 
    pktWrite(pkt,PktHeader,SIZE_PKTHEADER);
