@@ -1991,6 +1991,9 @@ void WriteNode(struct ConfigNode *tmpnode,osFile osfh)
    if(tmpnode->Flags & NODE_PACKNETMAIL)
       osFPrintf(osfh," PACKNETMAIL");
 
+	if(tmpnode->Flags & NODE_NONETMAILPASSWORD)
+      osFPrintf(osfh," NONETMAILPASSWORD");
+
    if(tmpnode->Flags & NODE_SENDAREAFIX)
       osFPrintf(osfh," SENDAREAFIX");
 
