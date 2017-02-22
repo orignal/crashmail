@@ -1530,6 +1530,56 @@ bool ReadConfig(char *filename,struct Config *cfg,short *seconderr,uint32_t *cfg
             return(FALSE);
          }
       }
+	  else if(stricmp(cfgword,"MASQUERADE")==0)
+      {
+         if(!LastFilter)
+         {
+            strcpy(cfgerr,"No previous FILTER line");
+            osClose(cfgfh);
+            return(FALSE);
+			}
+
+         if(!(tmpcommand=(struct Command *)osAllocCleared(sizeof(struct Command))))
+         {
+            *seconderr=READCONFIG_NO_MEM;
+            osClose(cfgfh);
+            return(FALSE);
+         }
+
+         jbAddNode(&LastFilter->CommandList,(struct jbNode *)tmpcommand);
+
+         tmpcommand->Cmd=COMMAND_MASQUERADE;
+
+         if(!(jbstrcpy(buf2,cfgbuf,200,&jbcpos)))
+         {
+            strcpy(cfgerr,"Missing argument");
+            osClose(cfgfh);
+            return(FALSE);
+         }
+
+         if(!(tmpcommand->string=(char *)osAlloc(strlen(buf2)+1)))
+         {
+            *seconderr=READCONFIG_NO_MEM;
+            osClose(cfgfh);
+            return(FALSE);
+         }
+
+			strcpy(tmpcommand->string,buf2);
+
+         if(!(jbstrcpy(buf2,cfgbuf,200,&jbcpos)))
+         {
+            strcpy(cfgerr,"Missing argument");
+            osClose(cfgfh);
+            return(FALSE);
+         }
+
+         if(!(Parse4DDestPat(buf2,&tmpcommand->n4ddestpat)))
+         {
+            sprintf(cfgerr,"Invalid node pattern \"%s\"",buf2);
+            osClose(cfgfh);
+            return(FALSE);
+         }
+      }	
       else if(stricmp(cfgword,"REMOTEAF")==0)
       {
          if(!LastCNode)

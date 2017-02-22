@@ -273,6 +273,7 @@ struct Arealist
 #define COMMAND_BOUNCEMSG    7
 #define COMMAND_BOUNCEHEADER 8
 #define COMMAND_REMAPMSG     9
+#define COMMAND_MASQUERADE   10
 
 struct Command
 {
