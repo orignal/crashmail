@@ -260,6 +260,11 @@ REMAPMSG <new name> <destination pattern>
   FILTER TYPE=NETMAIL and TOADDR=2:999/*.*
   REMAPMSG "*" 2:200/*.*
 
+MASQUERADE <new name> <origin pattern>
+ 
+  This command can change the origin name and node of a message. If
+  the new name is "*", the old name will be kept.  	
+
 Additional examples
 -------------------
 Copy all talk about me to a special area:

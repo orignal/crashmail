@@ -832,6 +832,32 @@ bool Filter_Remap(struct MemMessage *mm,char *namepat,struct Node4DPat *destpat)
 	return(TRUE);
 }
 
+bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *destpat)
+{
+	char buf[100];	
+	char oldfrom[36],newfrom[36];
+    struct Node4D oldorig4d, neworig4d;
+
+	strcpy(oldfrom, mm->From);
+    Copy4D(&oldorig4d,&mm->OrigNode);
+	
+	ExpandNodePat(destpat,&mm->OrigNode,&neworig4d);
+
+    if(strcmp(namepat,"*")==0) strcpy(newfrom,mm->From);
+    else                       strcpy(newfrom,namepat);
+
+	strcpy (mm->From, newfrom);
+	sprintf(buf,"\x01Masquerade as %s at %u:%u/%u.%u \x0d",
+    	newfrom, neworig4d.Zone, neworig4d.Net, neworig4d.Node, neworig4d.Point);
+	mmAddLine(mm,buf);
+
+	sprintf(buf,"\x01Message originally from %s at %u:%u/%u.%ud",
+    	oldfrom, oldorig4d.Zone, oldorig4d.Net, oldorig4d.Node, oldorig4d.Point);
+	mmAddLine(mm,buf);
+
+	return TRUE;
+}
+
 bool Filter(struct MemMessage *mm)
 {
    struct Filter *filter;
@@ -915,6 +941,11 @@ bool Filter(struct MemMessage *mm)
 							return(FALSE);
 
 						break;
+			   case COMMAND_MASQUERADE:
+                  if(!Filter_Masquerade(mm,command->string,&command->n4ddestpat))
+							return(FALSE);
+
+						break;	
 				}
 
 				if(mm->Flags & MMFLAG_KILL)
