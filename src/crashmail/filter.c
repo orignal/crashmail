@@ -846,14 +846,13 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
     if(strcmp(namepat,"*")==0) strcpy(newfrom,mm->From);
     else                       strcpy(newfrom,namepat);
 
-	strcpy (mm->From, newfrom);
-	sprintf(buf,"\x01Masquerade as %s at %u:%u/%u.%u \x0d",
+	LogWrite(4,SYSTEMINFO, "Filter: Masquerade message as %s at %u:%u/%u.%u",
     	newfrom, neworig4d.Zone, neworig4d.Net, neworig4d.Node, neworig4d.Point);
-	mmAddLine(mm,buf);
-
-	sprintf(buf,"\x01Message originally from %s at %u:%u/%u.%ud",
+	LogWrite(4,SYSTEMINFO, "Filter: Message originally from %s at %u:%u/%u.%u",
     	oldfrom, oldorig4d.Zone, oldorig4d.Net, oldorig4d.Node, oldorig4d.Point);
-	mmAddLine(mm,buf);
+
+	Copy4D(&mm->OrigNode,&neworig4d);	
+	strcpy (mm->From, newfrom);
 
 	return TRUE;
 }
