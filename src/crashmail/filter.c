@@ -851,7 +851,11 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 	LogWrite(4,SYSTEMINFO, "Filter: Message originally from %s at %u:%u/%u.%u",
     	oldfrom, oldorig4d.Zone, oldorig4d.Net, oldorig4d.Node, oldorig4d.Point);
 
-	Copy4D(&mm->OrigNode,&neworig4d);	
+	if(mm->Area[0] == 0)	
+		Copy4D(&mm->OrigNode,&neworig4d);
+	else
+		Copy4D(&mm->Origin4D,&neworig4d);
+
 	strcpy (mm->From, newfrom);
 
 	return TRUE;
