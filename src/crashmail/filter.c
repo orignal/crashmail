@@ -859,12 +859,10 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 	oldlist.Last=mm->TextChunks.Last;
 	jbNewList(&mm->TextChunks); // create empty list
 
+	Copy4D(&mm->OrigNode,&neworig4d);
 	if(mm->Area[0] == 0)	
-	{
-		Copy4D(&mm->OrigNode,&neworig4d);
 		MakeNetmailKludges(mm); // with new origin
-	}
-	else
+	else // echo
 		Copy4D(&mm->Origin4D,&neworig4d);
 
 	for(tmp=(struct TextChunk *)oldlist.First;tmp;tmp=tmp->Next)
@@ -895,7 +893,7 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 	jbFreeList(&oldlist);
 
 	// cleanup seenby and path
-	oldlist.First=mm->SeenBy.First;
+	/*oldlist.First=mm->SeenBy.First;
 	oldlist.Last=mm->SeenBy.Last;
 	jbNewList(&mm->SeenBy); 
 	jbFreeList(&oldlist);
@@ -903,7 +901,7 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 	oldlist.First=mm->Path.First;
 	oldlist.Last=mm->Path.Last;
 	jbNewList(&mm->Path); 
-	jbFreeList(&oldlist);
+	jbFreeList(&oldlist);*/
 
 	return TRUE;
 }
