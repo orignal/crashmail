@@ -834,9 +834,12 @@ bool Filter_Remap(struct MemMessage *mm,char *namepat,struct Node4DPat *destpat)
 
 bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *destpat)
 {
-	char buf[100];	
 	char oldfrom[36],newfrom[36];
     struct Node4D oldorig4d, neworig4d;
+	struct jbList oldlist;
+	struct TextChunk *tmp;
+	uint32_t c,d;
+	bool skip;
 
 	strcpy(oldfrom, mm->From);
     Copy4D(&oldorig4d,&mm->OrigNode);
@@ -845,18 +848,62 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 
     if(strcmp(namepat,"*")==0) strcpy(newfrom,mm->From);
     else                       strcpy(newfrom,namepat);
+	strcpy (mm->From, newfrom);
 
 	LogWrite(4,SYSTEMINFO, "Filter: Masquerade message as %s at %u:%u/%u.%u",
     	newfrom, neworig4d.Zone, neworig4d.Net, neworig4d.Node, neworig4d.Point);
 	LogWrite(4,SYSTEMINFO, "Filter: Message originally from %s at %u:%u/%u.%u",
     	oldfrom, oldorig4d.Zone, oldorig4d.Net, oldorig4d.Node, oldorig4d.Point);
 
+	oldlist.First=mm->TextChunks.First;
+	oldlist.Last=mm->TextChunks.Last;
+	jbNewList(&mm->TextChunks); // create empty list
+
 	if(mm->Area[0] == 0)	
+	{
 		Copy4D(&mm->OrigNode,&neworig4d);
+		MakeNetmailKludges(mm); // with new origin
+	}
 	else
 		Copy4D(&mm->Origin4D,&neworig4d);
 
-	strcpy (mm->From, newfrom);
+	for(tmp=(struct TextChunk *)oldlist.First;tmp;tmp=tmp->Next)
+   	{
+		c=0;
+
+		while(c<tmp->Length)
+	  	{
+			for(d=c;d<tmp->Length && tmp->Data[d]!=13;d++);
+		 	if(tmp->Data[d]==13) d++;
+
+			skip=FALSE;
+
+			if(d-c > 5) 
+			{
+				// don't copy kludges because we have inserted new before
+			 	if(strncmp(&tmp->Data[c],"\x01""INTL",5)==0) skip=TRUE;
+			 	if(strncmp(&tmp->Data[c],"\x01""FMPT",5)==0) skip=TRUE;
+			 	if(strncmp(&tmp->Data[c],"\x01""TOPT",5)==0) skip=TRUE;
+			}
+
+		 	if(d-c!=0 && !skip)
+				mmAddBuf(&mm->TextChunks,&tmp->Data[c],d-c); // copy 
+
+		 	c=d;
+  		}
+    }
+	jbFreeList(&oldlist);
+
+	// cleanup seenby and path
+	oldlist.First=mm->SeenBy.First;
+	oldlist.Last=mm->SeenBy.Last;
+	jbNewList(&mm->SeenBy); 
+	jbFreeList(&oldlist);
+
+	oldlist.First=mm->Path.First;
+	oldlist.Last=mm->Path.Last;
+	jbNewList(&mm->Path); 
+	jbFreeList(&oldlist);
 
 	return TRUE;
 }
