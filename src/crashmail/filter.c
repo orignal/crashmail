@@ -882,6 +882,8 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 			 	if(strncmp(&tmp->Data[c],"\x01""INTL",5)==0) skip=TRUE;
 			 	if(strncmp(&tmp->Data[c],"\x01""FMPT",5)==0) skip=TRUE;
 			 	if(strncmp(&tmp->Data[c],"\x01""TOPT",5)==0) skip=TRUE;
+				// exclude VIA
+				if(strncmp(&tmp->Data[c],"\x01""VIA",4)==0) skip=TRUE;
 			}
 
 		 	if(d-c!=0 && !skip)
