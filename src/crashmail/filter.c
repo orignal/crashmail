@@ -938,6 +938,10 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 	jbNewList(&mm->Path); 
 	jbFreeList(&oldlist);
 
+	// new seenby and path
+	mmAddNodes2DList(&mm->SeenBy, neworig4d.Net, neworig4d.Node);
+	AddNodePath(&mm->Path,&neworig4d);		
+
 	return TRUE;
 }
 
