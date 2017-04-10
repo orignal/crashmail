@@ -871,6 +871,18 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
      	mmAddBuf(&mm->TextChunks, str, strlen(str));
 	}	
 
+	// replace REPLY
+	separator = strchr (mm->REPLY, ' ');
+	if (separator)
+	{
+		char str[80];
+		strncpy (str, separator + 1, 80);
+		snprintf (mm->REPLY, 80, "%u:%u/%u.%u %s", neworig4d.Zone, neworig4d.Net, neworig4d.Node, neworig4d.Point, str);
+		// update kludge
+		snprintf(str, 80, "\x01REPLY: %s\x0d",mm->REPLY);
+     	mmAddBuf(&mm->TextChunks, str, strlen(str));
+	}	
+
 	Copy4D(&mm->OrigNode,&neworig4d);
 	if(mm->Area[0] == 0)	
 		MakeNetmailKludges(mm); // with new origin
@@ -890,8 +902,9 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 
 			if (d-c > 6)
 			{
-				// MSGID added adready
+				// MSGID adn REPLY added adready
 				if(strncmp(&tmp->Data[c],"\x01""MSGID", 6)==0) skip=TRUE;
+				if(strncmp(&tmp->Data[c],"\x01""REPLY", 6)==0) skip=TRUE;
 			}
 			if(d-c > 5) 
 			{
