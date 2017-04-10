@@ -865,6 +865,15 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 	else // echo
 		Copy4D(&mm->Origin4D,&neworig4d);
 
+	// replace MSGID
+	char * separator = strchr (mm->MSGID, ' ');
+	if (separator)
+	{
+		char str[80];
+		strncpy (str, separator + 1, 80);
+		snprintf (mm->MSGID, 80, "%u:%u/%u.%u %s", neworig4d.Zone, neworig4d.Net, neworig4d.Node, neworig4d.Point, str);
+	}	
+
 	for(tmp=(struct TextChunk *)oldlist.First;tmp;tmp=tmp->Next)
    	{
 		c=0;
@@ -882,6 +891,9 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 			 	if(strncmp(&tmp->Data[c],"\x01""INTL",5)==0) skip=TRUE;
 			 	if(strncmp(&tmp->Data[c],"\x01""FMPT",5)==0) skip=TRUE;
 			 	if(strncmp(&tmp->Data[c],"\x01""TOPT",5)==0) skip=TRUE;
+			}
+			else if (d-c > 4)
+			{			
 				// exclude VIA
 				if(strncmp(&tmp->Data[c],"\x01""Via",4)==0) skip=TRUE;
 			}
