@@ -859,12 +859,6 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 	oldlist.Last=mm->TextChunks.Last;
 	jbNewList(&mm->TextChunks); // create empty list
 
-	Copy4D(&mm->OrigNode,&neworig4d);
-	if(mm->Area[0] == 0)	
-		MakeNetmailKludges(mm); // with new origin
-	else // echo
-		Copy4D(&mm->Origin4D,&neworig4d);
-
 	// replace MSGID
 	char * separator = strchr (mm->MSGID, ' ');
 	if (separator)
@@ -872,7 +866,16 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 		char str[80];
 		strncpy (str, separator + 1, 80);
 		snprintf (mm->MSGID, 80, "%u:%u/%u.%u %s", neworig4d.Zone, neworig4d.Net, neworig4d.Node, neworig4d.Point, str);
+		// update kludge
+		snprintf(str, 80, "\x01MSGID: %s\x0d",mm->MSGID);
+     	mmAddBuf(&mm->TextChunks, str, strlen(str));
 	}	
+
+	Copy4D(&mm->OrigNode,&neworig4d);
+	if(mm->Area[0] == 0)	
+		MakeNetmailKludges(mm); // with new origin
+	else // echo
+		Copy4D(&mm->Origin4D,&neworig4d);
 
 	for(tmp=(struct TextChunk *)oldlist.First;tmp;tmp=tmp->Next)
    	{
@@ -885,15 +888,20 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 
 			skip=FALSE;
 
-			if(d-c > 5) 
+			if (d-c > 6)
+			{
+				// MSGID added adready
+				if(strncmp(&tmp->Data[c],"\x01""MSGID", 6)==0) skip=TRUE;
+			}
+			else if(d-c > 5) 
 			{
 				// don't copy kludges because we have inserted new before
 			 	if(strncmp(&tmp->Data[c],"\x01""INTL",5)==0) skip=TRUE;
 			 	if(strncmp(&tmp->Data[c],"\x01""FMPT",5)==0) skip=TRUE;
 			 	if(strncmp(&tmp->Data[c],"\x01""TOPT",5)==0) skip=TRUE;
 			}
-			else if (d-c > 4)
-			{			
+			else if (d-c > 4)		
+			{
 				// exclude VIA
 				if(strncmp(&tmp->Data[c],"\x01""Via",4)==0) skip=TRUE;
 			}
