@@ -893,14 +893,14 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 				// MSGID added adready
 				if(strncmp(&tmp->Data[c],"\x01""MSGID", 6)==0) skip=TRUE;
 			}
-			else if(d-c > 5) 
+			if(d-c > 5) 
 			{
 				// don't copy kludges because we have inserted new before
 			 	if(strncmp(&tmp->Data[c],"\x01""INTL",5)==0) skip=TRUE;
 			 	if(strncmp(&tmp->Data[c],"\x01""FMPT",5)==0) skip=TRUE;
 			 	if(strncmp(&tmp->Data[c],"\x01""TOPT",5)==0) skip=TRUE;
 			}
-			else if (d-c > 4)		
+			if (d-c > 4)		
 			{
 				// exclude VIA
 				if(strncmp(&tmp->Data[c],"\x01""Via",4)==0) skip=TRUE;
@@ -915,7 +915,7 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 	jbFreeList(&oldlist);
 
 	// cleanup seenby and path
-	/*oldlist.First=mm->SeenBy.First;
+	oldlist.First=mm->SeenBy.First;
 	oldlist.Last=mm->SeenBy.Last;
 	jbNewList(&mm->SeenBy); 
 	jbFreeList(&oldlist);
@@ -923,7 +923,7 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 	oldlist.First=mm->Path.First;
 	oldlist.Last=mm->Path.Last;
 	jbNewList(&mm->Path); 
-	jbFreeList(&oldlist);*/
+	jbFreeList(&oldlist);
 
 	return TRUE;
 }
