@@ -913,11 +913,11 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 			 	if(strncmp(&tmp->Data[c],"\x01""FMPT",5)==0) skip=TRUE;
 			 	if(strncmp(&tmp->Data[c],"\x01""TOPT",5)==0) skip=TRUE;
 			}
-			if (d-c > 4)		
+			/*if (d-c > 4)		
 			{
 				// exclude VIA
 				if(strncmp(&tmp->Data[c],"\x01""Via",4)==0) skip=TRUE;
-			}
+			}*/
 
 		 	if(d-c!=0 && !skip)
 				mmAddBuf(&mm->TextChunks,&tmp->Data[c],d-c); // copy 
@@ -940,7 +940,7 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 
 	// new seenby and path
 	mmAddNodes2DList(&mm->SeenBy, neworig4d.Net, neworig4d.Node);
-	AddNodePath(&mm->Path,&neworig4d);		
+	mmAddNodes2DList(&mm->Path, neworig4d.Net, neworig4d.Node);	
 
 	return TRUE;
 }
