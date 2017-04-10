@@ -940,7 +940,8 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 
 	// new seenby and path
 	mmAddNodes2DList(&mm->SeenBy, neworig4d.Net, neworig4d.Node);
-	mmAddNodes2DList(&mm->Path, neworig4d.Net, neworig4d.Node);	
+	neworig4d.Point = 0; // don't add point to path
+	AddNodePath(&mm->Path, &neworig4d); 
 
 	return TRUE;
 }
