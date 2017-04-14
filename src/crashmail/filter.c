@@ -871,17 +871,20 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
      	mmAddBuf(&mm->TextChunks, str, strlen(str));
 	}	
 
-	// replace REPLY
-	separator = strchr (mm->REPLY, ' ');
-	if (separator)
-	{
-		char str[80];
-		strncpy (str, separator + 1, 80);
-		snprintf (mm->REPLY, 80, "%u:%u/%u.%u %s", neworig4d.Zone, neworig4d.Net, neworig4d.Node, neworig4d.Point, str);
-		// update kludge
-		snprintf(str, 80, "\x01REPLY: %s\x0d",mm->REPLY);
-     	mmAddBuf(&mm->TextChunks, str, strlen(str));
-	}	
+	// replace REPLY for netmail
+	if(mm->Area[0] == 0)	
+	{	
+		separator = strchr (mm->REPLY, ' ');
+		if (separator)
+		{
+			char str[80];
+			strncpy (str, separator + 1, 80);
+			snprintf (mm->REPLY, 80, "%u:%u/%u.%u %s", neworig4d.Zone, neworig4d.Net, neworig4d.Node, neworig4d.Point, str);
+			// update kludge
+			snprintf(str, 80, "\x01REPLY: %s\x0d",mm->REPLY);
+		 	mmAddBuf(&mm->TextChunks, str, strlen(str));
+		}	
+	}
 
 	Copy4D(&mm->OrigNode,&neworig4d);
 	if(mm->Area[0] == 0)	
@@ -902,9 +905,10 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 
 			if (d-c > 6)
 			{
-				// MSGID adn REPLY added adready
+				// MSGID added adready
 				if(strncmp(&tmp->Data[c],"\x01""MSGID", 6)==0) skip=TRUE;
-				if(strncmp(&tmp->Data[c],"\x01""REPLY", 6)==0) skip=TRUE;
+				// REPLY for netmail added adready
+				if(mm->Area[0] == 0 && strncmp(&tmp->Data[c],"\x01""REPLY", 6)==0) skip=TRUE;
 			}
 			if(d-c > 5) 
 			{
@@ -913,11 +917,11 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 			 	if(strncmp(&tmp->Data[c],"\x01""FMPT",5)==0) skip=TRUE;
 			 	if(strncmp(&tmp->Data[c],"\x01""TOPT",5)==0) skip=TRUE;
 			}
-			/*if (d-c > 4)		
+			if (d-c > 4)		
 			{
 				// exclude VIA
 				if(strncmp(&tmp->Data[c],"\x01""Via",4)==0) skip=TRUE;
-			}*/
+			}
 
 		 	if(d-c!=0 && !skip)
 				mmAddBuf(&mm->TextChunks,&tmp->Data[c],d-c); // copy 
