@@ -903,7 +903,30 @@ bool Filter_Masquerade(struct MemMessage *mm,char *namepat,struct Node4DPat *des
 
 			skip=FALSE;
 
-			if (d-c > 6)
+			if ((tmp->Data[c+1] == '*') && (d-c > 9)) // Origin
+			{
+				char * s = &tmp->Data[c]; size_t len = d-c;
+				if(strncmp(s," * Origin", 9)==0)
+				{	
+					char * leftBracket;
+					leftBracket = (char *)memchr (s+9, '(', len-9);
+					if (leftBracket)
+					{
+						char * rightBracket;
+						rightBracket = (char *)memchr (leftBracket + 1, ')', len-(leftBracket-s));
+						if (rightBracket)
+						{	
+							mmAddBuf(&mm->TextChunks, s, leftBracket-s+1); // before address
+							char addr[80];
+							int l = snprintf (addr, 80, "%u:%u/%u.%u", neworig4d.Zone, neworig4d.Net, neworig4d.Node, neworig4d.Point);
+							mmAddBuf(&mm->TextChunks, addr, l); // new address
+							mmAddBuf(&mm->TextChunks, rightBracket, len-(rightBracket-s)); // after address
+							skip = TRUE;
+						}
+					}	
+				}
+			}
+			else if (d-c > 6)
 			{
 				// MSGID added adready
 				if(strncmp(&tmp->Data[c],"\x01""MSGID", 6)==0) skip=TRUE;
