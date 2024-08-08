@@ -8,6 +8,7 @@ EXESUFFIX =
 BINDIR = ../bin
 OBJDIR = obj
 INCDIR = ./
+LDFLAGS = "-Wl,-allow-multiple-definition"
 
 OSLIB = oslib_linux/oslib.a
 JAMLIB = jamlib/jamlib.a
